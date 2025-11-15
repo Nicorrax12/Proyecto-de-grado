@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rankings Públicos - UNIPAZ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .selector-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .selector-section h2 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .selector-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .selector-group label {
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        select {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            border: 2px solid rgba(96, 165, 250, 0.5);
+            color: #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #60a5fa;
+            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            color: #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn:hover {
+            border-color: #60a5fa;
+            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            border-color: #60a5fa;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .table-container {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 15px;
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+        }
+
+        th {
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(71, 85, 105, 0.2);
+        }
+
+        tr:hover {
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        td {
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .posicion {
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        .posicion.oro {
+            color: #fbbf24;
+        }
+
+        .posicion.plata {
+            color: #d1d5db;
+        }
+
+        .posicion.bronce {
+            color: #fb923c;
+        }
+
+        .nombre {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .valor {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .valor.puntos {
+            color: #60a5fa;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .valor.correctas {
+            color: #10b981;
+        }
+
+        .valor.intentos {
+            color: #f59e0b;
+        }
+
+        .valor.eficiencia {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .valor.porcentaje {
+            color: #ec4899;
+            font-weight: 600;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #60a5fa;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(96, 165, 250, 0.3);
+            border-top: 4px solid #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.9rem;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            select {
+                min-width: 150px;
+                padding: 10px 15px;
+            }
+
+            .selector-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Volver</a>
+
+        <div class="header">
+            <h1>🏆 RANKINGS UNIPAZ</h1>
+            <p>Compite y demuestra tu dominio en cada materia</p>
+        </div>
+
+        <div class="selector-section">
+            <h2>Selecciona tu Carrera</h2>
+            <div class="selector-group">
+                <label for="carreraSelect">Carrera:</label>
+                <select id="carreraSelect" onchange="cambiarCarrera()">
+                    <option value="">Cargando carreras...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarTab('global')">🌍 Global</button>
+            <button class="tab-btn" onclick="cambiarTab('carrera')">📚 Mi Carrera</button>
+            <button class="tab-btn" onclick="cambiarTab('facil')">😊 Fácil</button>
+            <button class="tab-btn" onclick="cambiarTab('medio')">💪 Medio</button>
+            <button class="tab-btn" onclick="cambiarTab('dificil')">👹 Difícil</button>
+        </div>
+
+        <!-- GLOBAL -->
+        <div id="tab-global" class="tab-content active">
+            <div class="table-container">
+                <div id="global-content"></div>
+            </div>
+        </div>
+
+        <!-- CARRERA -->
+        <div id="tab-carrera" class="tab-content">
+            <div class="table-container">
+                <div id="carrera-content"></div>
+            </div>
+        </div>
+
+        <!-- FÁCIL -->
+        <div id="tab-facil" class="tab-content">
+            <div class="table-container">
+                <div id="facil-content"></div>
+            </div>
+        </div>
+
+        <!-- MEDIO -->
+        <div id="tab-medio" class="tab-content">
+            <div class="table-container">
+                <div id="medio-content"></div>
+            </div>
+        </div>
+
+        <!-- DIFÍCIL -->
+        <div id="tab-dificil" class="tab-content">
+            <div class="table-container">
+                <div id="dificil-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let carreraSeleccionada = null;
+        let carreras = [];
+
+        async function cargarCarreras() {
+            try {
+                const res = await fetch('/api/carreras');
+                carreras = await res.json();
+                
+                const select = document.getElementById('carreraSelect');
+                select.innerHTML = '<option value="">Selecciona una carrera...</option>';
+                
+                carreras.forEach(carrera => {
+                    const option = document.createElement('option');
+                    option.value = carrera.id;
+                    option.textContent = carrera.nombre;
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error('Error cargando carreras:', e);
+                document.getElementById('carreraSelect').innerHTML = '<option>Error al cargar</option>';
+            }
+        }
+
+        function cambiarCarrera() {
+            const select = document.getElementById('carreraSelect');
+            carreraSeleccionada = select.value;
+            
+            if (carreraSeleccionada) {
+                cargarGlobal();
+                cargarCarrera();
+                cargarModo('facil');
+                cargarModo('medio');
+                cargarModo('dificil');
+            }
+        }
+
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function mostrarLoading(id) {
+            document.getElementById(id).innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando...</p></div>';
+        }
+
+        function crearTabla(datos, id, esPorModo = false) {
+            if (!datos || datos.length === 0) {
+                document.getElementById(id).innerHTML = '<div class="empty">📭 No hay datos disponibles</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>Rango</th><th>Nombre</th><th>Puntos</th>';
+            if (esPorModo) {
+                html += '<th>Correctas</th><th>Intentos</th><th>Promedio</th><th>Mejor</th>';
+            } else {
+                html += '<th>Correctas</th><th>Intentos</th><th>Eficiencia</th><th>Éxito</th>';
+            }
+            html += '</tr></thead><tbody>';
+
+            datos.forEach((d, idx) => {
+                let clasePos = '';
+                if (idx === 0) clasePos = 'oro';
+                else if (idx === 1) clasePos = 'plata';
+                else if (idx === 2) clasePos = 'bronce';
+
+                const posicion = idx + 1 === 1 ? '🥇' : idx + 1 === 2 ? '🥈' : idx + 1 === 3 ? '🥉' : idx + 1;
+
+                html += `<tr>
+                    <td class="posicion ${clasePos}">${posicion}</td>
+                    <td class="nombre">${d.nombre}</td>
+                    <td class="valor puntos">${d.puntos}</td>
+                    <td class="valor correctas">${d.correctas || d.total_respuestas_correctas || 0}</td>
+                    <td class="valor intentos">${d.intentos}</td>`;
+
+                if (esPorModo) {
+                    html += `<td class="valor eficiencia">${d.promedio_puntos || 0} pts</td>
+                             <td class="valor porcentaje">${d.mejor_puntuacion}</td>`;
+                } else {
+                    html += `<td class="valor eficiencia">${d.eficiencia} pts/int</td>
+                             <td class="valor porcentaje">${d.porcentaje}%</td>`;
+                }
+
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById(id).innerHTML = html;
+        }
+
+        async function cargarGlobal() {
+            mostrarLoading('global-content');
+            try {
+                const res = await fetch('/api/rankings/global');
+                const datos = await res.json();
+                crearTabla(datos, 'global-content');
+            } catch (e) {
+                document.getElementById('global-content').innerHTML = `<div class="empty">❌ Error: ${e.message}</div>`;
+            }
+        }
+
+        async function cargarCarrera() {
+            mostrarLoading('carrera-content');
+            try {
+                if (!carreraSeleccionada) {
+                    document.getElementById('carrera-content').innerHTML = '<div class="empty">Selecciona una carrera primero</div>';
+                    return;
+                }
+                const res = await fetch(`/api/rankings/carrera/${carreraSeleccionada}`);
+                const datos = await res.json();
+                crearTabla(datos, 'carrera-content');
+            } catch (e) {
+                document.getElementById('carrera-content').innerHTML = `<div class="empty">❌ Error: ${e.message}</div>`;
+            }
+        }
+
+        async function cargarModo(modo) {
+            const id = `${modo}-content`;
+            mostrarLoading(id);
+            try {
+                const res = await fetch(`/api/rankings/por-modo/${modo}`);
+                const datos = await res.json();
+                crearTabla(datos, id, true);
+            } catch (e) {
+                document.getElementById(id).innerHTML = `<div class="empty">❌ Error: ${e.message}</div>`;
+            }
+        }
+
+        // Cargar carreras al entrar
+        cargarCarreras();
+    </script>
+</body>
+</html>

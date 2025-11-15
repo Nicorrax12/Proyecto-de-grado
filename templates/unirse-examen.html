@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unirse a Examen - UNIPAZ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #b0b0d0;
+            font-size: 1.1rem;
+        }
+
+        .login-prompt {
+            background: rgba(67, 233, 123, 0.1);
+            border: 2px solid #43e97b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
+            text-align: center;
+        }
+
+        .login-prompt.active {
+            display: block;
+        }
+
+        .login-prompt h3 {
+            color: #43e97b;
+            margin-bottom: 10px;
+        }
+
+        .login-prompt p {
+            color: #b0d0d0;
+            margin-bottom: 15px;
+        }
+
+        .btn-login {
+            background: #43e97b;
+            color: #0f0f1e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.3);
+        }
+
+        .card {
+            background: rgba(30, 30, 50, 0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e0e0ff;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: #f0f0f0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.15);
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background: rgba(245, 87, 108, 0.2);
+            border: 2px solid #f5576c;
+            color: #ff9999;
+        }
+
+        .alert.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            color: #ffc107;
+        }
+
+        .alert.success {
+            background: rgba(67, 233, 123, 0.2);
+            border: 2px solid #43e97b;
+            color: #43e97b;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .examen-info {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .examen-info.show {
+            display: block;
+        }
+
+        .examen-info h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #b0b0d0;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .resultado-previo {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .resultado-previo h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .resultado-previo p {
+            color: #e0e0ff;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">📚 UNIPAZ</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>📋 Unirse a Examen</h1>
+            <p>Ingresa el código del examen para participar</p>
+        </div>
+
+        <!-- ALERTA LOGIN REQUERIDO -->
+        <div class="login-prompt active" id="login-prompt">
+            <h3>🔐 Inicia sesión primero</h3>
+            <p>Necesitas estar logueado para responder exámenes</p>
+            <button class="btn-login" onclick="window.location.href='/login'">Ir a Login</button>
+        </div>
+
+        <!-- FORMULARIO BUSCAR EXAMEN -->
+        <div class="card" id="search-section" style="display: none;">
+            <h2 style="color: #e0e0ff; margin-bottom: 25px;">🔍 Buscar Examen</h2>
+
+            <div id="alert" class="alert"></div>
+
+            <div class="form-group">
+                <label for="codigo">Código de Examen</label>
+                <input type="text" id="codigo" placeholder="Ej: A1B2C3D4" maxlength="20">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="buscarExamen()">Buscar Examen</button>
+                <button class="btn btn-secondary" onclick="window.location.href='/'">Volver</button>
+            </div>
+        </div>
+
+        <!-- INFO DEL EXAMEN ENCONTRADO -->
+        <div class="examen-info" id="examen-info">
+            <h3>✅ Examen Encontrado</h3>
+            <div class="info-item">
+                <span class="info-label">Nombre:</span>
+                <span class="info-value" id="nombre-examen">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Duración:</span>
+                <span class="info-value" id="duracion-examen">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Preguntas:</span>
+                <span class="info-value" id="preguntas-examen">-</span>
+            </div>
+
+            <!-- MOSTRAR SI YA FUE RESPONDIDO -->
+            <div class="resultado-previo" id="resultado-previo" style="display: none;">
+                <h4>⚠️ Ya respondiste este examen</h4>
+                <p><strong>Resultado:</strong> <span id="resultado-prev-porcentaje">0</span>%</p>
+                <p><strong>Correctas:</strong> <span id="resultado-prev-correctas">0</span>/<span id="resultado-prev-totales">0</span></p>
+                <p><strong>Fecha:</strong> <span id="resultado-prev-fecha">-</span></p>
+            </div>
+
+            <div class="button-group" style="margin-top: 25px;">
+                <button class="btn btn-primary" id="btn-iniciar" onclick="iniciarExamen()">Iniciar Examen</button>
+                <button class="btn btn-secondary" onclick="resetForm()">Buscar Otro</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = `${window.location.protocol}//${window.location.host}/api`;
+        let usuarioActual = null;
+        let examenActual = null;
+        let preguntasExamen = [];
+        let yaRespondido = false;
+
+        // Verificar login al cargar
+        window.addEventListener('load', () => {
+            const usuario = localStorage.getItem('usuarioActual');
+            
+            if (usuario) {
+                try {
+                    usuarioActual = JSON.parse(usuario);
+                    console.log('✅ Usuario encontrado:', usuarioActual.nombre);
+                    document.getElementById('login-prompt').classList.remove('active');
+                    document.getElementById('search-section').style.display = 'block';
+                } catch (e) {
+                    console.error('Error parsing usuario:', e);
+                    mostrarAlerta('Error al cargar sesión', 'error');
+                }
+            } else {
+                console.log('❌ Usuario no logueado');
+            }
+        });
+
+        // ===== BUSCAR EXAMEN =====
+        async function buscarExamen() {
+            const codigo = document.getElementById('codigo').value.trim().toUpperCase();
+
+            console.log('🔍 Buscando examen con código:', codigo);
+
+            if (!codigo) {
+                mostrarAlerta('Ingresa el código del examen', 'error');
+                return;
+            }
+
+            if (!usuarioActual) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                mostrarAlerta('Buscando examen...', 'success');
+                
+                const res = await fetch(`${API_URL}/examenes/buscar-por-codigo`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo_acceso: codigo })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    examenActual = data;
+                    console.log('✅ Examen encontrado:', examenActual);
+                    
+                    // Verificar si ya fue respondido
+                    await verificarYaRespondido();
+                    
+                    await cargarPreguntasExamen();
+                    mostrarInfoExamen();
+                    mostrarAlerta('✅ Examen encontrado', 'success');
+                } else {
+                    mostrarAlerta(data.error || 'Código no encontrado', 'error');
+                }
+            } catch (e) {
+                console.error('❌ Error:', e);
+                mostrarAlerta('Error al buscar examen: ' + e.message, 'error');
+            }
+        }
+
+        // ===== VERIFICAR SI YA FUE RESPONDIDO =====
+        async function verificarYaRespondido() {
+            try {
+                const res = await fetch(
+                    `${API_URL}/examenes/${examenActual.examen_id}/ya-respondido/${usuarioActual.id}`
+                );
+                const data = await res.json();
+
+                if (res.ok) {
+                    yaRespondido = data.ya_respondido;
+                    console.log('📊 Ya respondido:', yaRespondido);
+                    
+                    if (yaRespondido) {
+                        console.log('⚠️ Resultado previo:', data.resultado);
+                        mostrarResultadoPrevio(data.resultado);
+                    }
+                }
+            } catch (e) {
+                console.error('❌ Error verificando:', e);
+            }
+        }
+
+        // ===== MOSTRAR RESULTADO PREVIO =====
+        function mostrarResultadoPrevio(resultado) {
+            document.getElementById('resultado-previo').style.display = 'block';
+            document.getElementById('resultado-prev-porcentaje').textContent = 
+                resultado.porcentaje.toFixed(1);
+            document.getElementById('resultado-prev-correctas').textContent = 
+                resultado.preguntas_correctas;
+            document.getElementById('resultado-prev-totales').textContent = 
+                resultado.preguntas_totales;
+            document.getElementById('resultado-prev-fecha').textContent = resultado.fecha;
+            
+            // Cambiar botón si ya fue respondido
+            const btnIniciar = document.getElementById('btn-iniciar');
+            btnIniciar.textContent = '🔒 Ya respondido (Solo lectura)';
+            btnIniciar.disabled = true;
+            btnIniciar.style.opacity = '0.5';
+            btnIniciar.style.cursor = 'not-allowed';
+        }
+
+        // ===== CARGAR PREGUNTAS =====
+        async function cargarPreguntasExamen() {
+            try {
+                const res = await fetch(`${API_URL}/examenes/${examenActual.examen_id}/preguntas`);
+                const data = await res.json();
+
+                if (res.ok) {
+                    preguntasExamen = data;
+                    console.log('✅ Preguntas cargadas:', preguntasExamen.length);
+                } else {
+                    console.error('Error cargando preguntas:', data);
+                    preguntasExamen = [];
+                }
+            } catch (e) {
+                console.error('❌ Error cargando preguntas:', e);
+                preguntasExamen = [];
+            }
+        }
+
+        // ===== MOSTRAR INFO EXAMEN =====
+        function mostrarInfoExamen() {
+            document.getElementById('nombre-examen').textContent = examenActual.nombre;
+            document.getElementById('duracion-examen').textContent = examenActual.duracion + ' minutos';
+            document.getElementById('preguntas-examen').textContent = preguntasExamen.length || '?';
+
+            document.getElementById('examen-info').classList.add('show');
+        }
+
+        // ===== INICIAR EXAMEN =====
+        function iniciarExamen() {
+            if (yaRespondido) {
+                mostrarAlerta('Ya respondiste este examen. Solo se puede responder una vez.', 'warning');
+                return;
+            }
+
+            if (!examenActual || !preguntasExamen.length) {
+                mostrarAlerta('Error: No hay preguntas cargadas', 'error');
+                return;
+            }
+
+            console.log('🚀 Iniciando examen:', examenActual.nombre);
+
+            // Guardar datos en sessionStorage
+            sessionStorage.setItem('examenEnCurso', JSON.stringify({
+                examen_id: examenActual.examen_id,
+                materia_id: examenActual.materia_id,
+                nombre: examenActual.nombre,
+                duracion: examenActual.duracion,
+                preguntas: preguntasExamen,
+                usuario_id: usuarioActual.id,
+                timestamp: new Date().getTime()
+            }));
+
+            console.log('✅ Datos guardados en sessionStorage');
+            
+            // IMPORTANTE: Usar setTimeout para asegurar que se guarden los datos
+            setTimeout(() => {
+                console.log('🔄 Redirigiendo a /quiz-responder');
+                window.location.href = '/quiz-responder';
+            }, 300);
+        }
+
+        // ===== RESETEAR FORMULARIO =====
+        function resetForm() {
+            document.getElementById('codigo').value = '';
+            document.getElementById('examen-info').classList.remove('show');
+            document.getElementById('resultado-previo').style.display = 'none';
+            document.getElementById('alert').innerHTML = '';
+            document.getElementById('btn-iniciar').disabled = false;
+            document.getElementById('btn-iniciar').textContent = 'Iniciar Examen';
+            document.getElementById('btn-iniciar').style.opacity = '1';
+            document.getElementById('btn-iniciar').style.cursor = 'pointer';
+            examenActual = null;
+            preguntasExamen = [];
+            yaRespondido = false;
+        }
+
+        // ===== MOSTRAR ALERTA =====
+        function mostrarAlerta(mensaje, tipo) {
+            const alertEl = document.getElementById('alert');
+            alertEl.innerHTML = `<strong>${tipo === 'error' ? '❌' : tipo === 'warning' ? '⚠️' : '✅'}</strong> ${mensaje}`;
+            alertEl.className = `alert ${tipo} show`;
+            console.log(`[${tipo.toUpperCase()}]`, mensaje);
+        }
+
+        // ===== ENTER PARA BUSCAR =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const codigoInput = document.getElementById('codigo');
+            if (codigoInput) {
+                codigoInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        buscarExamen();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

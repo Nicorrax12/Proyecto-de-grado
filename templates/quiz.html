@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - UNIPAZ</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-right a:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .quiz-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-panel {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            color: #60a5fa;
+            font-weight: 800;
+        }
+
+        .stat-value.warning {
+            color: #ef4444;
+            animation: pulse 0.6s infinite;
+        }
+
+        .stat-value.racha {
+            color: #f59e0b;
+        }
+
+        .stat-value.record {
+            color: #10b981;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .quiz-container {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(96, 165, 250, 0.2);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
+        }
+
+        .pregunta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .pregunta-numero {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .modo-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modo-badge.facil {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .modo-badge.normal {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .modo-badge.dificil {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .pregunta-texto {
+            font-size: 1.6rem;
+            color: #f1f5f9;
+            line-height: 1.9;
+            margin-bottom: 35px;
+            font-weight: 600;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%);
+            border-radius: 15px;
+            border-left: 5px solid #60a5fa;
+        }
+
+        .opciones {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .opcion {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.3) 0%, rgba(45, 54, 73, 0.3) 100%);
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #e2e8f0;
+            font-weight: 500;
+            font-size: 1.05rem;
+            text-align: left;
+        }
+
+        .opcion:hover:not(.disabled) {
+            border-color: #60a5fa;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.25) 0%, rgba(96, 165, 250, 0.1) 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(96, 165, 250, 0.3);
+        }
+
+        .opcion.selected {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.4) 0%, rgba(167, 139, 250, 0.3) 100%);
+            border-color: #60a5fa;
+            box-shadow: 0 0 25px rgba(96, 165, 250, 0.4);
+        }
+
+        .opcion.correcta {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
+            border-color: #10b981;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .opcion.incorrecta {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.15) 100%);
+            border-color: #ef4444;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-siguiente {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: white;
+            flex: 1;
+            box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3);
+        }
+
+        .btn-siguiente:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(96, 165, 250, 0.5);
+        }
+
+        .btn-siguiente:disabled {
+            background: #475569;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-volver {
+            background: transparent;
+            color: #60a5fa;
+            border: 2px solid #60a5fa;
+        }
+
+        .btn-volver:hover {
+            background: rgba(96, 165, 250, 0.1);
+            box-shadow: 0 10px 30px rgba(96, 165, 250, 0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.3rem;
+            color: #94a3b8;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(96, 165, 250, 0.3);
+            border-top: 3px solid #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .quiz-container {
+                padding: 25px;
+            }
+
+            .opciones {
+                grid-template-columns: 1fr;
+            }
+
+            .pregunta-texto {
+                font-size: 1.3rem;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .quiz-top {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div class="navbar-brand">📚 UNIPAZ</div>
+            <div class="nav-right">
+                <a href="/">← Volver</a>
+            </div>
+        </div>
+
+        <div id="error-container"></div>
+
+        <div class="quiz-top">
+            <div class="stat-panel">
+                <div class="stat-label">Pregunta</div>
+                <div class="stat-value"><span id="pregunta-actual">1</span>/<span id="total-preguntas">10</span></div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-label">Puntos</div>
+                <div class="stat-value" id="puntos-actual">0</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-label">🔥 Racha</div>
+                <div class="stat-value racha" id="racha-actual">0</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-label">🏆 Récord</div>
+                <div class="stat-value record" id="record-actual">0</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-label">❤️ Vidas</div>
+                <div class="stat-value" id="vidas-display">∞</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-label">⏱️ Tiempo</div>
+                <div class="stat-value" id="timer-display">∞</div>
+            </div>
+            <div class="stat-panel" style="grid-column: span 2;">
+                <div class="stat-label">Materia</div>
+                <div id="materia-nombre" style="font-size: 1rem; color: #cbd5e1; margin-top: 8px; font-weight: 600;">Cargando...</div>
+            </div>
+            <div class="stat-panel" style="grid-column: span 2;">
+                <div class="stat-label">Modo</div>
+                <div id="modo-display" style="font-size: 1rem; color: #cbd5e1; margin-top: 8px; font-weight: 600;">Cargando...</div>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <div id="loading">
+                <div class="loading-spinner"></div>
+                <p>Cargando preguntas...</p>
+            </div>
+
+            <div id="quiz-content" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 10%;"></div>
+                </div>
+
+                <div class="pregunta-header">
+                    <div class="pregunta-numero" id="pregunta-numero">Pregunta 1 de 10</div>
+                    <div class="modo-badge facil" id="modo-badge">😊 FACIL</div>
+                </div>
+
+                <div class="pregunta-texto" id="pregunta-texto">Cargando...</div>
+
+                <div class="opciones" id="opciones"></div>
+
+                <div class="btn-container">
+                    <button class="btn btn-volver" onclick="volverAIndex()">← Salir</button>
+                    <button class="btn btn-siguiente" id="btn-siguiente" onclick="siguiente()" disabled>Siguiente →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("=== QUIZ v8 FINAL - CON VIDAS, TIMER Y NOMBRE DE MATERIA ===");
+
+        // 🔑 LECTURA FLEXIBLE DEL LOCALSTORAGE
+        let usuario_id = localStorage.getItem('usuario_id');
+        let usuario_nombre = localStorage.getItem('usuario_nombre');
+        let usuario_email = localStorage.getItem('usuario_email');
+
+        if (!usuario_id || !usuario_nombre) {
+            const usuarioJSON = localStorage.getItem('usuarioActual') || localStorage.getItem('usuario');
+            if (usuarioJSON) {
+                try {
+                    const usuario = JSON.parse(usuarioJSON);
+                    usuario_id = usuario.id;
+                    usuario_nombre = usuario.nombre;
+                    usuario_email = usuario.email;
+                } catch (e) {
+                    console.error("❌ Error parseando JSON:", e);
+                }
+            }
+        }
+
+        if (!usuario_id || !usuario_nombre) {
+            document.getElementById('error-container').innerHTML = 
+                '<div class="error">⚠️ Por favor inicia sesión primero</div>';
+            document.getElementById('loading').style.display = 'none';
+            setTimeout(() => window.location.href = '/login', 2000);
+        }
+
+        console.log("✅ Usuario:", usuario_nombre, "ID:", usuario_id);
+
+        // OBTENER PARÁMETROS
+        const urlParams = new URLSearchParams(window.location.search);
+        const materia_id = urlParams.get('materia_id');
+        const modo = (urlParams.get('modo') || 'facil').toLowerCase();
+
+        // 🔑 CONFIGURACIÓN DE MODOS CON VIDAS Y TIMER
+        const modoConfig = {
+            facil: { 
+                vidas: Infinity,
+                tiempoXPregunta: Infinity,
+                multiplicador: 1, 
+                emoji: '😊',
+                nombre: 'FACIL'
+            },
+            normal: {
+                vidas: 3,
+                tiempoXPregunta: 300,  // 5 minutos
+                multiplicador: 2,
+                emoji: '💪',
+                nombre: 'NORMAL'
+            },
+            medio: {  // Alias para compatibilidad
+                vidas: 3,
+                tiempoXPregunta: 300,
+                multiplicador: 2,
+                emoji: '💪',
+                nombre: 'NORMAL'
+            },
+            dificil: {
+                vidas: 1,
+                tiempoXPregunta: 120,  // 2 minutos
+                multiplicador: 5,
+                emoji: '👹',
+                nombre: 'DIFICIL'
+            }
+        };
+
+        const config = modoConfig[modo] || modoConfig.facil;
+
+        // VARIABLES
+        let preguntas = [];
+        let preguntaActual = 0;
+        let respuestaSeleccionada = null;
+        let puntosActuales = 0;
+        let racha = 0;
+        let record = parseInt(localStorage.getItem(`record_${materia_id}_${modo}`) || '0');
+        let vidasActuales = config.vidas;
+        let tiempoRestante = config.tiempoXPregunta;
+        let respondiendo = false;
+        let tiempoInicio = Date.now();
+        let timerInterval = null;
+
+        // UI INICIAL
+        document.getElementById('modo-badge').textContent = `${config.emoji} ${config.nombre}`;
+        document.getElementById('modo-badge').className = `modo-badge ${modo}`;
+        document.getElementById('modo-display').textContent = `${config.emoji} ${config.nombre}`;
+        document.getElementById('record-actual').textContent = record;
+        mostrarVidas();
+
+        // 🔑 MOSTRAR VIDAS
+        function mostrarVidas() {
+            if (config.vidas === Infinity) {
+                document.getElementById('vidas-display').textContent = '∞';
+                return;
+            }
+            let display = '';
+            for (let i = 0; i < config.vidas; i++) {
+                display += i < vidasActuales ? '❤️' : '🖤';
+            }
+            document.getElementById('vidas-display').textContent = display;
+        }
+
+        // 🔑 ACTUALIZAR TIMER
+        function actualizarTimer() {
+            if (config.tiempoXPregunta === Infinity) {
+                document.getElementById('timer-display').textContent = '∞';
+                return;
+            }
+
+            const minutos = Math.floor(tiempoRestante / 60);
+            const segundos = tiempoRestante % 60;
+            const display = String(minutos).padStart(2, '0') + ':' + String(segundos).padStart(2, '0');
+            document.getElementById('timer-display').textContent = display;
+
+            const timerEl = document.getElementById('timer-display');
+            if (tiempoRestante <= 10) {
+                timerEl.classList.add('warning');
+            } else {
+                timerEl.classList.remove('warning');
+            }
+        }
+
+        // 🔑 INICIAR TIMER POR PREGUNTA
+        function iniciarTimer() {
+            if (config.tiempoXPregunta === Infinity) return;
+
+            tiempoRestante = config.tiempoXPregunta;
+            actualizarTimer();
+
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+                actualizarTimer();
+
+                if (tiempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    console.log("⏰ TIEMPO AGOTADO");
+                    perderVida();
+                }
+            }, 1000);
+        }
+
+        // CARGAR PREGUNTAS
+        async function cargarPreguntas() {
+            try {
+                console.log("🔍 Cargando preguntas de materia", materia_id);
+                
+                const res = await fetch(`/api/preguntas/${materia_id}?dificultad=${modo}&cantidad=10`);
+                
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+
+                preguntas = await res.json();
+                
+                if (!preguntas || preguntas.length === 0) {
+                    throw new Error('No hay preguntas disponibles');
+                }
+
+                console.log("✅", preguntas.length, "preguntas cargadas");
+
+                document.getElementById('total-preguntas').textContent = preguntas.length;
+                
+                // 🔑 CARGAR NOMBRE DE MATERIA
+                const quizData = localStorage.getItem('quizSelection');
+                if (quizData) {
+                    const data = JSON.parse(quizData);
+                    if (data.materiaInfo && data.materiaInfo.nombre) {
+                        document.getElementById('materia-nombre').textContent = data.materiaInfo.nombre;
+                    }
+                }
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('quiz-content').style.display = 'block';
+
+                mostrarPregunta();
+            } catch (e) {
+                console.error('❌ Error:', e);
+                document.getElementById('error-container').innerHTML = 
+                    '<div class="error">⚠️ ' + e.message + '</div>';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // MOSTRAR PREGUNTA
+        function mostrarPregunta() {
+            if (preguntaActual >= preguntas.length) {
+                finalizarQuiz();
+                return;
+            }
+
+            const pregunta = preguntas[preguntaActual];
+            respuestaSeleccionada = null;
+            respondiendo = false;
+
+            document.getElementById('pregunta-actual').textContent = preguntaActual + 1;
+            document.getElementById('pregunta-numero').textContent = `Pregunta ${preguntaActual + 1} de ${preguntas.length}`;
+            document.getElementById('pregunta-texto').innerHTML = pregunta.texto;
+            document.getElementById('progress-fill').style.width = ((preguntaActual + 1) / preguntas.length * 100) + '%';
+
+            const opcionesDiv = document.getElementById('opciones');
+            opcionesDiv.innerHTML = '';
+
+            ['a', 'b', 'c', 'd'].forEach((letra) => {
+                const opcion = pregunta[`opcion_${letra}`];
+                const btn = document.createElement('button');
+                btn.className = 'opcion';
+                btn.innerHTML = opcion || '';
+                btn.onclick = () => seleccionarOpcion(btn, letra);
+                opcionesDiv.appendChild(btn);
+            });
+
+            document.getElementById('btn-siguiente').disabled = true;
+
+            // 🔑 INICIAR TIMER PARA ESTA PREGUNTA
+            iniciarTimer();
+
+            if (window.MathJax) {
+                try {
+                    MathJax.typesetPromise().catch(() => {});
+                } catch (e) {}
+            }
+        }
+
+        function seleccionarOpcion(btn, letra) {
+            if (respondiendo) return;
+
+            document.querySelectorAll('.opcion').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            respuestaSeleccionada = letra;
+            document.getElementById('btn-siguiente').disabled = false;
+        }
+
+        function siguiente() {
+            if (!respuestaSeleccionada || respondiendo) return;
+
+            respondiendo = true;
+            if (timerInterval) clearInterval(timerInterval);
+
+            const pregunta = preguntas[preguntaActual];
+            const respuestaCorrecta = (pregunta.respuesta_correcta || '').toLowerCase();
+            const esCorrecta = respuestaSeleccionada === respuestaCorrecta;
+
+            const botones = document.querySelectorAll('.opcion');
+            botones.forEach((btn, idx) => {
+                const letra = ['a', 'b', 'c', 'd'][idx];
+                if (letra === respuestaSeleccionada) {
+                    btn.classList.add(esCorrecta ? 'correcta' : 'incorrecta');
+                }
+                if (letra === respuestaCorrecta && !esCorrecta) {
+                    btn.classList.add('correcta');
+                }
+                btn.disabled = true;
+            });
+
+            if (esCorrecta) {
+                racha++;
+                puntosActuales += (10 * config.multiplicador);
+                if (racha > record) {
+                    record = racha;
+                    localStorage.setItem(`record_${materia_id}_${modo}`, record);
+                    document.getElementById('record-actual').textContent = record;
+                }
+            } else {
+                racha = 0;
+                perderVida();
+            }
+
+            document.getElementById('racha-actual').textContent = racha;
+            document.getElementById('puntos-actual').textContent = puntosActuales;
+
+            setTimeout(() => {
+                preguntaActual++;
+                mostrarPregunta();
+            }, 1500);
+        }
+
+        // 🔑 PERDER VIDA
+        function perderVida() {
+            if (config.vidas === Infinity) return;
+
+            vidasActuales--;
+            mostrarVidas();
+            console.log("❌ VIDA PERDIDA. Vidas:", vidasActuales);
+
+            if (vidasActuales <= 0) {
+                console.log("💀 GAME OVER");
+                finalizarQuiz();
+            }
+        }
+
+        async function finalizarQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const tiempoTotal = Math.floor((Date.now() - tiempoInicio) / 1000);
+            const preguntasCorrectas = Math.round(puntosActuales / (10 * config.multiplicador));
+            const porcentaje = (preguntasCorrectas / preguntas.length) * 100;
+
+            try {
+                const datosResultado = {
+                    usuario_id: parseInt(usuario_id),
+                    materia_id: parseInt(materia_id),
+                    preguntas_totales: preguntas.length,
+                    preguntas_correctas: preguntasCorrectas,
+                    puntos_obtenidos: puntosActuales,
+                    porcentaje: porcentaje,
+                    tiempo_total_segundos: tiempoTotal,
+                    modo: modo
+                };
+
+                const resGuardar = await fetch('/api/usuarios/' + usuario_id + '/guardar-resultado', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datosResultado)
+                });
+
+                if (resGuardar.ok) {
+                    console.log("✅ RESULTADO GUARDADO EN BD");
+                }
+            } catch (e) {
+                console.error("❌ Error al guardar:", e);
+            }
+
+            alert(`🎉 ¡QUIZ FINALIZADO!\n\n📊 Puntos: ${puntosActuales}\n🔥 Racha: ${racha}\n🏆 Récord: ${record}\n✅ Correctas: ${preguntasCorrectas}/${preguntas.length}`);
+            window.location.href = '/';
+        }
+
+        function volverAIndex() {
+            if (confirm('¿Salir? Se perderá tu progreso.')) {
+                window.location.href = '/';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            cargarPreguntas();
+        });
+    </script>
+</body>
+</html>

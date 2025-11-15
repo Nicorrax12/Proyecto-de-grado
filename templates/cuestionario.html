@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - UNIPAZ</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/quiz-gameplay.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="quiz-wrapper">
+        <!-- Header del Quiz -->
+        <div class="quiz-header">
+            <div class="quiz-info">
+                <h2 id="materia-titulo">Cargando...</h2>
+                <span class="modo-badge" id="modo-badge">Normal</span>
+            </div>
+            <div class="quiz-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Pregunta</span>
+                    <span class="stat-value"><span id="pregunta-actual">1</span>/<span id="total-preguntas">10</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Puntaje</span>
+                    <span class="stat-value" id="puntaje-actual">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Tiempo</span>
+                    <span class="stat-value" id="tiempo-total">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor Principal del Quiz -->
+        <div class="quiz-container" id="quiz-container">
+            <!-- Pregunta -->
+            <div class="pregunta-box">
+                <h3 class="pregunta-texto" id="pregunta-texto">Cargando pregunta...</h3>
+            </div>
+
+            <!-- Opciones -->
+            <div class="opciones-container">
+                <button class="opcion" data-opcion="a" onclick="seleccionarOpcion(this)">
+                    <span class="opcion-letra">A</span>
+                    <span class="opcion-texto" id="opcion-a"></span>
+                </button>
+                <button class="opcion" data-opcion="b" onclick="seleccionarOpcion(this)">
+                    <span class="opcion-letra">B</span>
+                    <span class="opcion-texto" id="opcion-b"></span>
+                </button>
+                <button class="opcion" data-opcion="c" onclick="seleccionarOpcion(this)">
+                    <span class="opcion-letra">C</span>
+                    <span class="opcion-texto" id="opcion-c"></span>
+                </button>
+                <button class="opcion" data-opcion="d" onclick="seleccionarOpcion(this)">
+                    <span class="opcion-letra">D</span>
+                    <span class="opcion-texto" id="opcion-d"></span>
+                </button>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="quiz-actions">
+                <button class="btn-secondary" onclick="salirQuiz()">Salir Quiz</button>
+                <button class="btn-primary" id="btn-siguiente" onclick="siguientePregunta()" disabled>
+                    <span id="btn-text">Siguiente</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados (oculta inicialmente) -->
+        <div class="resultados-screen" id="resultados-screen" style="display: none;">
+            <div class="resultado-card">
+                <h2>🎉 ¡Quiz Completado!</h2>
+                <div class="resultado-stats">
+                    <div class="resultado-item">
+                        <span class="resultado-label">Puntaje Final</span>
+                        <span class="resultado-valor" id="resultado-puntaje">0/10</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="resultado-label">Porcentaje</span>
+                        <span class="resultado-valor" id="resultado-porcentaje">0%</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="resultado-label">Tiempo Total</span>
+                        <span class="resultado-valor" id="resultado-tiempo">00:00</span>
+                    </div>
+                </div>
+                <div class="resultado-actions">
+                    <button class="btn-primary" onclick="volverHome()">Ir al Inicio</button>
+                    <button class="btn-secondary" onclick="nuevoQuiz()">Otro Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/quiz-gameplay.js"></script>
+</body>
+</html>

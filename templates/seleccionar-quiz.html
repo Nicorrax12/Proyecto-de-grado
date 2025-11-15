@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Quiz - UNIPAZ</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/quiz-selector.css">
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-selector">
+            <!-- Encabezado -->
+            <div class="selector-header">
+                <h1>🎓 Selecciona tu Quiz</h1>
+                <p>Elige tu carrera, semestre, materia y nivel de dificultad</p>
+            </div>
+
+            <!-- Paso 1: Seleccionar Carrera -->
+            <div class="selector-step active" id="step-1-carrera">
+                <div class="step-header">
+                    <h2>Paso 1: Selecciona tu Carrera</h2>
+                    <span class="step-number">1/4</span>
+                </div>
+                <div class="carreras-grid" id="carreras-grid">
+                    <!-- Se llena dinámicamente con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Paso 2: Seleccionar Semestre -->
+            <div class="selector-step" id="step-2-semestre">
+                <div class="step-header">
+                    <h2>Paso 2: Selecciona el Semestre</h2>
+                    <span class="step-number">2/4</span>
+                </div>
+                <div class="semestres-grid" id="semestres-grid">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <button class="btn-back" onclick="volverPaso(1)">← Volver</button>
+            </div>
+
+            <!-- Paso 3: Seleccionar Materia -->
+            <div class="selector-step" id="step-3-materia">
+                <div class="step-header">
+                    <h2>Paso 3: Selecciona la Materia</h2>
+                    <span class="step-number">3/4</span>
+                </div>
+                <div class="materias-grid" id="materias-grid">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <button class="btn-back" onclick="volverPaso(2)">← Volver</button>
+            </div>
+
+            <!-- Paso 4: Seleccionar Modo -->
+            <div class="selector-step" id="step-4-modo">
+                <div class="step-header">
+                    <h2>Paso 4: Selecciona el Modo de Dificultad</h2>
+                    <span class="step-number">4/4</span>
+                </div>
+                <div class="modos-grid">
+                    <div class="modo-card" onclick="iniciarQuiz('facil')">
+                        <div class="modo-icon">🟢</div>
+                        <h3>Normal</h3>
+                        <p>Preguntas fáciles para practicar</p>
+                        <span class="difficulty-stars">⭐☆☆</span>
+                    </div>
+                    <div class="modo-card" onclick="iniciarQuiz('medio')">
+                        <div class="modo-icon">🟡</div>
+                        <h3>Heredero</h3>
+                        <p>Preguntas de dificultad media</p>
+                        <span class="difficulty-stars">⭐⭐☆</span>
+                    </div>
+                    <div class="modo-card" onclick="iniciarQuiz('dificil')">
+                        <div class="modo-icon">🔴</div>
+                        <h3>Pesadilla</h3>
+                        <p>Preguntas difíciles extremas</p>
+                        <span class="difficulty-stars">⭐⭐⭐</span>
+                    </div>
+                </div>
+                <button class="btn-back" onclick="volverPaso(3)">← Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/quiz-selector.js"></script>
+</body>
+</html>

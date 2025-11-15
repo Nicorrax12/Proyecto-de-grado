@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responder Examen - UNIPAZ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .timer {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .timer.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .timer.ok {
+            background: rgba(67, 233, 123, 0.2);
+            border-color: #43e97b;
+            color: #43e97b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pregunta-card {
+            background: rgba(30, 30, 50, 0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .pregunta-numero {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .pregunta-texto {
+            color: #e0e0ff;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .opciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .opcion {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .opcion:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        .opcion input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .opcion label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .opcion.selected {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress {
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background: rgba(245, 87, 108, 0.2);
+            border: 2px solid #f5576c;
+            color: #ff9999;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .opciones {
+                grid-template-columns: 1fr;
+            }
+
+            .pregunta-card {
+                padding: 20px;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">📚 UNIPAZ</a>
+        <div class="timer" id="timer">⏱️ 60:00</div>
+    </nav>
+
+    <div class="container">
+        <div class="progress">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span id="progress-text" style="color: #b0b0d0; font-weight: 600;">Pregunta 1 de 1</span>
+                <span id="respondidas" style="color: #667eea; font-weight: 600;">0 respondidas</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <div id="pregunta-container"></div>
+
+        <div class="button-group">
+            <button class="btn btn-secondary" id="btn-anterior" onclick="anteriorPregunta()" disabled>← Anterior</button>
+            <button class="btn btn-primary" id="btn-siguiente" onclick="siguientePregunta()">Siguiente →</button>
+            <button class="btn btn-primary" id="btn-terminar" onclick="terminarExamen()" style="display: none;">✅ Terminar Examen</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = `${window.location.protocol}//${window.location.host}/api`;
+        let examenEnCurso = null;
+        let usuarioActual = null;
+        let preguntaActual = 0;
+        let respuestas = {};
+        let tiempoRestante = 0;
+        let timerInterval = null;
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            const examen = sessionStorage.getItem('examenEnCurso');
+            const usuario = localStorage.getItem('usuarioActual');
+
+            if (!examen || !usuario) {
+                console.error('❌ Datos de examen no encontrados');
+                mostrarAlerta('Error: Datos de examen no encontrados', 'error');
+                setTimeout(() => window.location.href = '/unirse-examen', 2000);
+                return;
+            }
+
+            try {
+                examenEnCurso = JSON.parse(examen);
+                usuarioActual = JSON.parse(usuario);
+                
+                console.log('✅ Examen cargado:', examenEnCurso.nombre);
+                console.log('✅ Usuario:', usuarioActual.nombre);
+
+                // Inicializar respuestas
+                examenEnCurso.preguntas.forEach((_, i) => {
+                    respuestas[i] = null;
+                });
+
+                // Configurar timer
+                tiempoRestante = examenEnCurso.duracion * 60;
+                iniciarTimer();
+
+                // Mostrar primera pregunta
+                mostrarPregunta(0);
+            } catch (e) {
+                console.error('Error:', e);
+                mostrarAlerta('Error al cargar examen: ' + e.message, 'error');
+            }
+        });
+
+        // ===== MOSTRAR PREGUNTA =====
+        function mostrarPregunta(indice) {
+            if (indice < 0 || indice >= examenEnCurso.preguntas.length) return;
+
+            preguntaActual = indice;
+            const pregunta = examenEnCurso.preguntas[indice];
+
+            const container = document.getElementById('pregunta-container');
+            container.innerHTML = `
+                <div class="pregunta-card">
+                    <div class="pregunta-numero">Pregunta ${indice + 1} de ${examenEnCurso.preguntas.length}</div>
+                    <div class="pregunta-texto">$$${pregunta.texto}$$</div>
+
+                    <div class="opciones">
+                        <div class="opcion ${respuestas[indice] === 'a' ? 'selected' : ''}" onclick="seleccionarOpcion(${indice}, 'a')">
+                            <label>
+                                <input type="radio" name="respuesta" value="a" ${respuestas[indice] === 'a' ? 'checked' : ''}>
+                                <span style="color: #e0e0ff;">A) ${pregunta.opcion_a}</span>
+                            </label>
+                        </div>
+                        <div class="opcion ${respuestas[indice] === 'b' ? 'selected' : ''}" onclick="seleccionarOpcion(${indice}, 'b')">
+                            <label>
+                                <input type="radio" name="respuesta" value="b" ${respuestas[indice] === 'b' ? 'checked' : ''}>
+                                <span style="color: #e0e0ff;">B) ${pregunta.opcion_b}</span>
+                            </label>
+                        </div>
+                        <div class="opcion ${respuestas[indice] === 'c' ? 'selected' : ''}" onclick="seleccionarOpcion(${indice}, 'c')">
+                            <label>
+                                <input type="radio" name="respuesta" value="c" ${respuestas[indice] === 'c' ? 'checked' : ''}>
+                                <span style="color: #e0e0ff;">C) ${pregunta.opcion_c}</span>
+                            </label>
+                        </div>
+                        <div class="opcion ${respuestas[indice] === 'd' ? 'selected' : ''}" onclick="seleccionarOpcion(${indice}, 'd')">
+                            <label>
+                                <input type="radio" name="respuesta" value="d" ${respuestas[indice] === 'd' ? 'checked' : ''}>
+                                <span style="color: #e0e0ff;">D) ${pregunta.opcion_d}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Renderizar KaTeX
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(container, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+
+            // Actualizar botones y progreso
+            document.getElementById('btn-anterior').disabled = indice === 0;
+            document.getElementById('btn-siguiente').style.display = indice === examenEnCurso.preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('btn-terminar').style.display = indice === examenEnCurso.preguntas.length - 1 ? 'block' : 'none';
+
+            // Actualizar progreso
+            const respondidas = Object.values(respuestas).filter(r => r !== null).length;
+            document.getElementById('progress-text').textContent = `Pregunta ${indice + 1} de ${examenEnCurso.preguntas.length}`;
+            document.getElementById('respondidas').textContent = `${respondidas} respondidas`;
+            document.getElementById('progress-fill').style.width = (respondidas / examenEnCurso.preguntas.length * 100) + '%';
+        }
+
+        // ===== SELECCIONAR OPCIÓN =====
+        function seleccionarOpcion(indice, opcion) {
+            respuestas[indice] = opcion;
+            mostrarPregunta(indice);
+        }
+
+        // ===== NAVEGAR =====
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                mostrarPregunta(preguntaActual - 1);
+            }
+        }
+
+        function siguientePregunta() {
+            if (preguntaActual < examenEnCurso.preguntas.length - 1) {
+                mostrarPregunta(preguntaActual + 1);
+            }
+        }
+
+        // ===== TIMER =====
+        function iniciarTimer() {
+            document.getElementById('timer').textContent = formatoTiempo(tiempoRestante);
+
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+
+                const timerEl = document.getElementById('timer');
+                timerEl.textContent = '⏱️ ' + formatoTiempo(tiempoRestante);
+
+                if (tiempoRestante <= 300) {
+                    timerEl.className = 'timer warning';
+                }
+                if (tiempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    terminarExamen();
+                }
+            }, 1000);
+        }
+
+        function formatoTiempo(segundos) {
+            const mins = Math.floor(segundos / 60);
+            const secs = segundos % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // ===== TERMINAR EXAMEN =====
+        async function terminarExamen() {
+            clearInterval(timerInterval);
+
+            // Calcular resultado
+            let correctas = 0;
+            examenEnCurso.preguntas.forEach((pregunta, i) => {
+                if (respuestas[i] === pregunta.respuesta_correcta) {
+                    correctas++;
+                }
+            });
+
+            const porcentaje = (correctas / examenEnCurso.preguntas.length) * 100;
+            const tiempoUsado = (examenEnCurso.duracion * 60) - tiempoRestante;
+
+            console.log('📊 Resultado:', {
+                correctas,
+                totales: examenEnCurso.preguntas.length,
+                porcentaje: porcentaje.toFixed(2),
+                tiempo: tiempoUsado
+            });
+
+            // Guardar resultado
+            try {
+                const res = await fetch(`${API_URL}/usuarios/${usuarioActual.id}/guardar-resultado`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        examen_id: examenEnCurso.examen_id,
+                        materia_id: examenEnCurso.materia_id,
+                        preguntas_totales: examenEnCurso.preguntas.length,
+                        preguntas_correctas: correctas,
+                        puntos_obtenidos: correctas,
+                        porcentaje: porcentaje,
+                        tiempo_total_segundos: tiempoUsado,
+                        modo: 'normal'
+                    })
+                });
+
+                if (res.ok) {
+                    mostrarAlerta(`✅ Examen terminado: ${correctas}/${examenEnCurso.preguntas.length} correctas (${porcentaje.toFixed(1)}%)`, 'success');
+                    
+                    setTimeout(() => {
+                        sessionStorage.removeItem('examenEnCurso');
+                        window.location.href = '/perfil';
+                    }, 3000);
+                } else {
+                    const error = await res.json();
+                    mostrarAlerta('Error: ' + error.error, 'error');
+                }
+            } catch (e) {
+                mostrarAlerta('Error guardando resultado: ' + e.message, 'error');
+            }
+        }
+
+        // ===== MOSTRAR ALERTA =====
+        function mostrarAlerta(mensaje, tipo) {
+            const alertEl = document.getElementById('alert');
+            alertEl.innerHTML = mensaje;
+            alertEl.className = `alert ${tipo} show`;
+        }
+    </script>
+</body>
+</html>
